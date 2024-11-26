@@ -6,7 +6,7 @@ import interactions
 from dotenv import load_dotenv
 
 load_dotenv()
-token = "MTMxMTA3MDczMzU2NDM3OTE2Ng.GBUfEx.1V1VPzP5STE1d-uJzeg61m4p6waTDZczeCctPQ"
+token = ""
 
 client = discord.Client(intents=discord.Intents.default())
 
