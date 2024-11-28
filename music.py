@@ -85,7 +85,7 @@ class music(commands.Cog):
     async def pause(ctx,self):
         voice_client = self.message.guild.voice_client
         if voice_client.is_playing():
-            await voice_client.pause()
+             voice_client.pause()
         else:
             await self.send("The bot is not playing anything at the moment.")
         
@@ -93,7 +93,7 @@ class music(commands.Cog):
     async def resume(ctx,self):
         voice_client = self.message.guild.voice_client
         if voice_client.is_paused():
-            await voice_client.resume()
+             voice_client.resume()
         else:
             await self.send("The commands was not playing anything before this. Use play_song command")
 
@@ -101,7 +101,7 @@ class music(commands.Cog):
     async def stop(ctx,self):
         voice_client = self.message.guild.voice_client
         if voice_client.is_playing():
-            await voice_client.stop()
+             voice_client.stop()
         else:
             await self.send("The bot is not playing anything at the moment.")
             
