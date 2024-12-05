@@ -48,8 +48,12 @@ class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_member = None
+        self.songQue = []
+        
     
-    
+    async def playSong(url,voiceChannel,ctx,BotLoop):
+        filename = await YTDLSource.from_url(url,loop=BotLoop)
+        ctx.voiceChannel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename))
 
 
     @commands.command(name='join', help='Tells the bot to join the voice channel')
@@ -74,11 +78,11 @@ class music(commands.Cog):
     async def play(ctx,self,url):
             server = self.message.guild
             voice_channel = server.voice_client
+            loop = self.bot.loop
 
             async with self.typing():
-                filename = await YTDLSource.from_url(url, loop=self.bot.loop)
-                voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename))
-            await self.send('**Now playing:** {}'.format(filename))
+               await ctx.playSong(url,voice_channel,loop)
+            await self.send('**Now playing:** {}'.format(url))
 
 
     @commands.command(name='pause', help='This command pauses the song')
