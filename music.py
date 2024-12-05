@@ -48,8 +48,28 @@ class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_member = None
-    
-    
+        self.songQue = []
+
+    async def playSong(self,url,ctx: commands.Context):
+
+        await ctx.send('**Now playing:** {}'.format(url))
+        server = ctx.message.guild
+        voiceChannel = server.voice_client
+        filename = await YTDLSource.from_url(url,loop = self.bot.loop)
+        print(self.songQue)
+        def afterPlaying(_):
+            self.bot.loop.create_task(self.playNextSong(ctx))
+        voiceChannel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename),after=afterPlaying)
+
+    async def playNextSong(self,ctx:commands.Context):
+        print(self.songQue)
+        if len(self.songQue) == 0:
+            pass
+        else:
+            songUrl = self.songQue[0]
+            self.songQue = self.songQue[1:]
+            await self.playSong(songUrl,ctx)
+
 
 
     @commands.command(name='join', help='Tells the bot to join the voice channel')
@@ -71,14 +91,15 @@ class music(commands.Cog):
         
 
     @commands.command(name='play', help='To play song')
-    async def play(ctx,self,url):
-            server = self.message.guild
-            voice_channel = server.voice_client
-
-            async with self.typing():
-                filename = await YTDLSource.from_url(url, loop=self.bot.loop)
-                voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename))
-            await self.send('**Now playing:** {}'.format(filename))
+    async def play(self,ctx,url):
+            if ctx.voice_client.is_playing():
+                self.songQue.append(url)
+                await ctx.send(f"Added to queue: {url}")
+                print (self.songQue)
+                return
+            else:
+                async with ctx.typing():
+                    await self.playSong(url,ctx)
 
 
     @commands.command(name='pause', help='This command pauses the song')
@@ -104,5 +125,13 @@ class music(commands.Cog):
              voice_client.stop()
         else:
             await self.send("The bot is not playing anything at the moment.")
-            
-        
+
+    @commands.command(name='skip',help="skips the song aidens playing")
+    async def skip(self,ctx):
+        if ctx.voice_client.is_playing():
+            ctx.voice_client.stop()
+            self.playNextSong
+            return
+        else:
+            await ctx.send("no song is currently playing")
+            return
