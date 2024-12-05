@@ -92,6 +92,15 @@ class music(commands.Cog):
 
     @commands.command(name='play', help='To play song')
     async def play(self,ctx,url):
+            user_channel = ctx.author.voice.channel
+            if not ctx.message.author.voice:
+                await ctx.send("{} is not connected to a voice channel".format(self.message.author.name))
+                return
+            if ctx.voice_client and ctx.voice_client.channel == user_channel:
+                pass
+            else:
+                channel = ctx.message.author.voice.channel
+                await channel.connect()
             if ctx.voice_client.is_playing():
                 self.songQue.append(url)
                 await ctx.send(f"Added to queue: {url}")
